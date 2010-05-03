@@ -103,9 +103,9 @@ void TimerInit(void)
 
 	timer = CreateWaitableTimer(NULL, FALSE, NULL);
 	if(NULL == timer)
-    {
-        printf("CreateWaitableTimer failed (%d)\n", GetLastError());
-    }
+	{
+		printf("CreateWaitableTimer failed (%d)\n", GetLastError());
+	}
 
 	// Take first absolute time ref in milliseconds.
 	_ftime(&timebuffer);
@@ -138,7 +138,7 @@ void StartTimerLoop(TimerCallback_t _init_callback)
 	stop_timer = 0;
 	init_callback = _init_callback;
 	EnterMutex();
-		// At first, TimeDispatch will call init_callback.
+	// At first, TimeDispatch will call init_callback.
 	SetAlarm(NULL, 0, init_callback, 0, 0);
 	LeaveMutex();
 	timer_thread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)TimerThreadLoop, NULL, 0, &timer_thread_id);
