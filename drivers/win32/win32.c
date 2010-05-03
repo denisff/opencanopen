@@ -22,7 +22,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
 /*
-CAN driver interface.
+ CAN driver interface.
 */
 
 #include <windows.h>
@@ -41,9 +41,9 @@ extern "C" {
 
 // GetProcAddress doesn't have an UNICODE version for NT
 #ifdef UNDER_CE
-#define myTEXT(str) TEXT(str)
+  #define myTEXT(str) TEXT(str)
 #else
-#define myTEXT(str) str
+  #define myTEXT(str) str
 #endif
 
 #define MAX_NB_CAN_PORTS 16
@@ -63,10 +63,10 @@ CANCHANGEBAUDRATE_DRIVER_PROC m_canChangeBaudRate;
 /* CAN port structure */
 typedef struct
 {
-	char used;  /**< flag indicating CAN port usage, will be used to abort Receiver task*/
-	CAN_HANDLE fd; /**< CAN port file descriptor*/
-	TASK_HANDLE receiveTask; /**< CAN Receiver task*/
-	CO_Data* d; /**< CAN object data*/
+  char used;  /**< flag indicating CAN port usage, will be used to abort Receiver task*/
+  CAN_HANDLE fd; /**< CAN port file descriptor*/
+  TASK_HANDLE receiveTask; /**< CAN Receiver task*/
+  CO_Data* d; /**< CAN object data*/
 }CANPort;
 
 CANPort canports[MAX_NB_CAN_PORTS] = {{0,},{0,},{0,},{0,},{0,},{0,},{0,},{0,},{0,},{0,},{0,},{0,},{0,},{0,},{0,},{0,}};
@@ -86,11 +86,11 @@ UNS8 UnLoadCanDriver(LIB_HANDLE handle)
 
 /***************************************************************************/
 /**
-* Loads the dll and get funcs ptr
-*
-* @param driver_name String containing driver's dynamic library name
-* @return Library handle
-*/
+ * Loads the dll and get funcs ptr
+ *
+ * @param driver_name String containing driver's dynamic library name
+ * @return Library handle
+ */
 LIB_HANDLE LoadCanDriver(LPCTSTR driver_name)
 {
 	// driver module handle
@@ -104,7 +104,7 @@ LIB_HANDLE LoadCanDriver(LPCTSTR driver_name)
 	if (!handle)
 	{
 		fprintf (stderr, "%d\n", GetLastError());
-		return NULL;
+    	return NULL;
 	}
 
 	m_canReceive = (CANRECEIVE_DRIVER_PROC)GetProcAddress(handle, myTEXT("canReceive_driver"));
@@ -145,21 +145,21 @@ void canReceiveLoop(CAN_PORT port)
 CAN_HANDLE canOpen(s_BOARD *board, CO_Data * d)
 {
 	int i;
-	CAN_HANDLE fd0;
+    CAN_HANDLE fd0;
 
 	for(i=0; i < MAX_NB_CAN_PORTS; i++)
 	{
 		if(!canports[i].used)
-			break;
+		break;
 	}
 
-#ifndef NOT_USE_DYNAMIC_LOADING
+	#ifndef NOT_USE_DYNAMIC_LOADING
 	if (m_canOpen == NULL)
 	{
-		fprintf(stderr,"CanOpen : Can Driver dll not loaded\n");
-		return NULL;
+	   	fprintf(stderr,"CanOpen : Can Driver dll not loaded\n");
+	   	return NULL;
 	}
-#endif
+	#endif
 
 	fd0 = m_canOpen(board);
 	if(fd0)
@@ -186,7 +186,7 @@ int canClose(CO_Data * d)
 
 	if((CANPort*)d->canHandle)
 	{
-		((CANPort*)d->canHandle)->used = 0;
+	  ((CANPort*)d->canHandle)->used = 0;
 	}
 
 	tmp = (CANPort*)d->canHandle;
@@ -194,20 +194,20 @@ int canClose(CO_Data * d)
 
 	if(tmp)
 	{
-		// close CAN port
-		res = m_canClose(tmp->fd);
+	  // close CAN port
+	  res = m_canClose(tmp->fd);
 
-		// kill receiver task
-		WaitReceiveTaskEnd(&tmp->receiveTask);
+	  // kill receiver task
+	  WaitReceiveTaskEnd(&tmp->receiveTask);
 	}
 	return res;
 }
 
 UNS8 canChangeBaudRate(CAN_PORT port, char* baud)
 {
-	if(port){
+   if(port){
 		UNS8 res;
-		//LeaveMutex();
+	    //LeaveMutex();
 		res = m_canChangeBaudRate(((CANPort*)port)->fd, baud);
 		//EnterMutex();
 		return res; // OK
