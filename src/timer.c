@@ -63,7 +63,7 @@ TIMER_HANDLE SetAlarm(CO_Data* d, UNS32 id, TimerCallback_t callback, TIMEVAL va
 	for(row_number=0, row=timers; row_number <= last_timer_raw + 1 && row_number < MAX_NB_TIMER; row_number++, row++)
 	{
 		if (callback && 	/* if something to store */
-		   row->state == TIMER_FREE) /* and empty row */
+			row->state == TIMER_FREE) /* and empty row */
 		{	/* just store */
 			TIMEVAL real_timer_value;
 			TIMEVAL elapsed_time;
